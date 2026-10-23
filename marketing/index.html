@@ -1,0 +1,1672 @@
+<!--
+  HiLabs home page. Built to docs/website-design-brief.md, copy from docs/website-copy.md.
+
+  Authored for the Artifact runtime, which wraps this file in a doctype/head/body skeleton at
+  publish time. To serve it from the project's own domain, wrap it in a document with a charset
+  meta, a viewport meta carrying viewport-fit=cover, and `body{margin:0}`.
+
+  The CSS is inline rather than in styles.css on purpose: the brief's performance budget puts
+  Largest Contentful Paint under 2.5s on a mid-range Android over 4G, and inlining it removes a
+  blocking request from the critical path. It is still one stylesheet, in one place, at the top.
+  hero-scene.js and media.js stay separate modules, loaded after paint.
+-->
+<title>HiLabs: Learn How You Think, Not What to Repeat</title>
+<meta name="description" content="HiLabs is a new way to learn for adults of any background. Explore, learn alongside experts and build a portfolio of real work. Join our free first cohort.">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='6 6 108 108'%3E%3Cg fill='none' stroke='%232B2A7A' stroke-width='13' stroke-linecap='round'%3E%3Cpath d='M74.21 16.25 A46 46 0 0 1 104.99 69.56'/%3E%3Cpath d='M90.78 94.18 A46 46 0 0 1 29.22 94.18'/%3E%3Cpath d='M15.01 69.56 A46 46 0 0 1 45.79 16.25'/%3E%3C/g%3E%3Ccircle cx='60' cy='62' r='20' fill='%23F2A93B'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700&family=Source+Sans+3:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+
+<style>
+/* ===========================================================================
+   Tokens. Nothing outside this block declares a colour, a font or a radius.
+   The page commits to one light world with a single night band, so there is no
+   dark palette: color-scheme is pinned to light and body carries an explicit
+   background, so the page reads correctly on any host.
+   =========================================================================== */
+:root {
+  --indigo:         #2B2A7A;
+  --indigo-strong:  #1F1E5C;
+  --amber:          #F2A93B;
+  --amber-ink:      #A86200;
+  --night:          #15143D;
+  --surface:        #FFFFFF;
+  --surface-muted:  #F4F4F9;
+  --ink:            #1B1A3A;
+  --ink-muted:      #55556F;
+  --border:         #DADAE6;
+  --on-indigo:      #FFFFFF;
+  --on-night-muted: #B4B3CF;
+
+  --font-display: "Sora", "Source Sans 3", system-ui, sans-serif;
+  --font-body:    "Source Sans 3", system-ui, sans-serif;
+
+  --space-1: 4px;  --space-2: 8px;  --space-3: 16px;
+  --space-4: 24px; --space-5: 40px; --space-6: 64px; --space-7: 96px; --space-8: 144px;
+
+  --radius-sm: 6px; --radius-md: 12px; --radius-lg: 24px; --radius-pill: 999px;
+
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --gutter: max(20px, env(safe-area-inset-left, 0px));
+  --gutter-r: max(20px, env(safe-area-inset-right, 0px));
+  color-scheme: light;
+}
+@media (min-width: 768px) {
+  :root { --gutter: max(24px, env(safe-area-inset-left, 0px)); --gutter-r: max(24px, env(safe-area-inset-right, 0px)); }
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--surface);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: clamp(17px, 1.1vw, 18px);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0 0 auto;
+  height: env(safe-area-inset-top, 0px);
+  background: var(--surface);
+  z-index: 60;
+}
+
+/* ===========================================================================
+   Type scale
+   =========================================================================== */
+h1, h2, h3, .display { font-family: var(--font-display); text-wrap: balance; margin: 0; }
+p, ul, ol, dl, figure, table { margin: 0; }
+
+h1 {
+  font-size: clamp(40px, 5.4vw, 72px);
+  line-height: 1.02;
+  letter-spacing: -0.03em;
+  font-weight: 700;
+}
+h2 {
+  font-size: clamp(30px, 3.3vw, 44px);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  font-weight: 600;
+}
+h3 {
+  font-size: clamp(20px, 1.5vw, 22px);
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+  font-weight: 600;
+}
+.lead {
+  font-size: clamp(19px, 1.5vw, 22px);
+  line-height: 1.5;
+  color: var(--ink-muted);
+  max-width: 62ch;
+}
+.body { max-width: 62ch; }
+.small { font-size: 15px; line-height: 1.5; }
+.eyebrow {
+  font-family: var(--font-display);
+  font-size: clamp(12px, 0.9vw, 13px);
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--indigo);
+}
+.eyebrow--amber { color: var(--amber-ink); }
+.eyebrow--night { color: var(--on-night-muted); }
+
+/* A detail still to be filled in before launch. Visible, never silently dropped. */
+.ph {
+  border-bottom: 1px dashed currentColor;
+  padding-bottom: 1px;
+  font-variant-numeric: tabular-nums;
+  cursor: help;
+}
+
+/* ===========================================================================
+   Layout
+   =========================================================================== */
+.wrap {
+  width: 100%;
+  max-width: 1200px;
+  margin-inline: auto;
+  padding-left: var(--gutter);
+  padding-right: var(--gutter-r);
+}
+section { position: relative; }
+.pad { padding-block: clamp(var(--space-7), 9vw, var(--space-8)); }
+.pad-t { padding-top: clamp(var(--space-7), 9vw, var(--space-8)); }
+.muted { background: var(--surface-muted); }
+.surface { background: var(--surface); }
+
+.grid { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: var(--space-4); }
+.c1-5  { grid-column: 1 / span 5; }
+.c1-6  { grid-column: 1 / span 6; }
+.c1-7  { grid-column: 1 / span 7; }
+.c7-12 { grid-column: 7 / span 6; }
+.c8-12 { grid-column: 8 / span 5; }
+@media (max-width: 1023px) {
+  .grid { grid-template-columns: minmax(0, 1fr); }
+  .c1-5, .c1-6, .c1-7, .c7-12, .c8-12 { grid-column: 1 / -1; }
+}
+
+.stack  { display: flex; flex-direction: column; gap: var(--space-4); }
+.stack-s { display: flex; flex-direction: column; gap: var(--space-3); }
+.stack-l { display: flex; flex-direction: column; gap: var(--space-6); }
+
+.rule { height: 1px; background: var(--border); border: 0; margin: 0; }
+
+/* ===========================================================================
+   The sinking-rings motif
+   =========================================================================== */
+.rings { display: block; width: 100%; height: auto; color: var(--indigo); }
+.rings g circle { stroke-opacity: 0.12; }
+.rings--night { color: #FFFFFF; }
+.rings--night g circle { stroke-opacity: 0.10; }
+.rings-core { opacity: 1; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .rings g circle { stroke-dasharray: 100; animation: ring-draw 1.2s var(--ease) backwards; }
+  .rings g circle:nth-child(1) { animation-delay: 0s; }
+  .rings g circle:nth-child(2) { animation-delay: 0.1s; }
+  .rings g circle:nth-child(3) { animation-delay: 0.2s; }
+  .rings g circle:nth-child(4) { animation-delay: 0.3s; }
+  .rings g circle:nth-child(5) { animation-delay: 0.4s; }
+  .rings-core { animation: core-pop 0.5s var(--ease) 0.9s backwards; }
+}
+@keyframes ring-draw { from { stroke-dashoffset: 100; } to { stroke-dashoffset: 0; } }
+@keyframes core-pop {
+  from { opacity: 0; transform: scale(0.4); }
+  60%  { opacity: 1; transform: scale(1.18); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+/* small amber dot, used inline before a line of copy */
+.dot {
+  display: inline-block;
+  width: 6px; height: 6px;
+  border-radius: var(--radius-pill);
+  background: var(--amber);
+  margin-right: var(--space-2);
+  vertical-align: 0.15em;
+  flex: none;
+}
+.dot-lg {
+  display: block;
+  width: 14px; height: 14px;
+  border-radius: var(--radius-pill);
+  background: var(--amber);
+  flex: none;
+}
+
+/* ===========================================================================
+   Navigation
+   =========================================================================== */
+.nav {
+  position: sticky;
+  top: env(safe-area-inset-top, 0px);
+  z-index: 50;
+  height: 72px;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid transparent;
+  transition: border-color 200ms var(--ease);
+}
+.nav.scrolled { border-bottom-color: var(--border); }
+.nav .wrap { height: 100%; display: flex; align-items: center; gap: var(--space-4); }
+
+.lockup { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+.lockup svg { width: 32px; height: 32px; flex: none; }
+.lockup .word {
+  font-family: var(--font-display);
+  font-size: 22px;
+  letter-spacing: -0.02em;
+  color: var(--indigo);
+  white-space: nowrap;
+}
+.lockup .word b { font-weight: 700; }
+.lockup .word i { font-weight: 400; font-style: normal; }
+
+.nav-links { margin-left: auto; display: flex; align-items: center; gap: var(--space-5); }
+.nav-links a.t {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ink);
+  text-decoration: none;
+}
+.nav-links a.t:hover { color: var(--indigo); }
+@media (max-width: 899px) { .nav-links { display: none; } }
+
+.burger {
+  margin-left: auto;
+  width: 44px; height: 44px;
+  display: none;
+  place-items: center;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--ink);
+  cursor: pointer;
+}
+.burger svg { width: 20px; height: 20px; }
+@media (max-width: 899px) { .burger { display: grid; } }
+
+.sheet {
+  position: fixed;
+  inset: 0;
+  z-index: 55;
+  background: var(--night);
+  padding: var(--space-5) var(--gutter);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+.sheet[hidden] { display: none !important; }
+.sheet-top { display: flex; align-items: center; justify-content: space-between; }
+.sheet-close {
+  width: 44px; height: 44px;
+  display: grid; place-items: center;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.24);
+  border-radius: var(--radius-sm);
+  color: var(--on-indigo);
+  cursor: pointer;
+}
+.sheet-close svg { width: 20px; height: 20px; }
+.sheet nav { display: flex; flex-direction: column; gap: var(--space-2); }
+.sheet nav a {
+  font-family: var(--font-display);
+  font-size: 30px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--on-indigo);
+  text-decoration: none;
+  padding-block: 10px;
+  min-height: 44px;
+}
+
+/* ===========================================================================
+   Buttons and links
+   =========================================================================== */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1;
+  padding: 16px 28px;
+  min-height: 44px;
+  border: 0;
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 180ms var(--ease);
+}
+.btn svg { width: 16px; height: 16px; flex: none; transition: transform 180ms var(--ease); }
+.btn:hover svg { transform: translateX(4px); }
+.btn--primary { background: var(--indigo); color: var(--on-indigo); }
+.btn--primary:hover { background: var(--indigo-strong); }
+.btn--amber { background: var(--amber); color: var(--night); }
+/* No amber-strong token exists, so hover lifts the same amber rather than inventing a hue. */
+.btn--amber:hover { filter: brightness(1.07); }
+.btn--sm { font-size: 15px; padding: 11px 18px; }
+.btn--full { width: 100%; }
+
+.link-strong {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 16px;
+  color: var(--indigo);
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 6px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+}
+.link-strong:hover { color: var(--indigo-strong); }
+.link-arrow {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 16px;
+  color: var(--indigo);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+}
+.link-arrow svg { width: 16px; height: 16px; transition: transform 180ms var(--ease); }
+.link-arrow:hover { color: var(--indigo-strong); }
+.link-arrow:hover svg { transform: translateX(4px); }
+
+a:focus-visible, button:focus-visible, summary:focus-visible,
+input:focus-visible, textarea:focus-visible {
+  outline: 2px solid var(--indigo);
+  outline-offset: 3px;
+  border-radius: var(--radius-sm);
+}
+.on-night a:focus-visible, .on-night button:focus-visible { outline-color: #FFFFFF; }
+
+.skip {
+  position: absolute; left: -9999px; top: 0; z-index: 70;
+  background: var(--indigo); color: var(--on-indigo);
+  padding: 12px 18px; border-radius: var(--radius-sm); text-decoration: none;
+}
+.skip:focus { left: var(--gutter); top: 8px; }
+
+/* ===========================================================================
+   Media placeholders
+   =========================================================================== */
+.media { position: relative; overflow: hidden; border-radius: var(--radius-lg); background: var(--surface-muted); }
+.media img, .media video { display: block; width: 100%; height: 100%; object-fit: cover; }
+.media--square { border-radius: 0; }
+
+/* Centred, not bottom-pinned: at the bottom of the full-bleed band the label sat underneath
+   the night overlay and the whole panel read as an empty box rather than a placeholder. */
+.placeholder {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  width: 100%;
+  height: 100%;
+  padding: var(--space-4);
+  background: var(--surface-muted);
+  border: 1px dashed var(--border);
+  border-radius: inherit;
+}
+/* --ink-muted, not --amber-ink: amber-ink on surface-muted is 4.34:1, under AA for 12px, and
+   a placeholder is scaffolding rather than one of the page's amber moments. */
+.placeholder .tag {
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+.placeholder p { font-size: 15px; line-height: 1.45; color: var(--ink-muted); max-width: 38ch; margin-inline: auto; }
+/* A placeholder sits at a shallower ratio than the photo it stands in for, so an unfilled
+   slot does not leave a 630px void. The real photo gets the ratio the brief specifies. */
+.band-photo .media:has(.placeholder) { aspect-ratio: 16 / 6; }
+.on-night .placeholder { background: rgba(255, 255, 255, 0.06); border-color: rgba(255, 255, 255, 0.18); }
+.on-night .placeholder p, .on-night .placeholder .tag { color: var(--on-night-muted); }
+
+/* ===========================================================================
+   Hero
+   =========================================================================== */
+/* Sized so the problem section's band edge is visible above the fold at 1440x900, which the
+   brief asks for. The headline reaches its full 72px from 1600px up, where the extra height
+   is affordable. */
+#hero { padding-top: clamp(48px, 4.5vw, 80px); padding-bottom: clamp(56px, 5.4vw, 104px); }
+#hero h1 { font-size: clamp(40px, 4.5vw, 72px); }
+#hero .grid { align-items: center; }
+.hero-copy { display: flex; flex-direction: column; gap: var(--space-4); position: relative; z-index: 2; }
+.hero-copy h1 { max-width: 20ch; }
+.hero-copy h1 .hl { color: var(--indigo); }
+.hero-copy .lead { max-width: 54ch; }
+.hero-cta { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-4); }
+/* Deliberately not a flex container: flex drops the whitespace between items, which closed
+   up the spaces around the [60] and [MONTH YEAR] placeholders. */
+.hero-note { color: var(--ink-muted); }
+
+.hero-scene {
+  position: relative;
+  aspect-ratio: 1;
+  width: 100%;
+  max-width: 560px;
+  margin-right: -6%;
+  z-index: 1;
+}
+.hero-scene canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 600ms var(--ease);
+}
+.hero-scene canvas.live { opacity: 1; }
+.hero-scene .rings {
+  position: absolute;
+  inset: 0;
+  transition: opacity 600ms var(--ease);
+}
+.hero-scene.scene-live .rings { opacity: 0; }
+
+@media (max-width: 1023px) {
+  #hero { overflow: hidden; }
+  #hero .grid { position: relative; }
+  .hero-scene {
+    position: absolute;
+    top: -14%;
+    right: -26%;
+    width: 86%;
+    max-width: 420px;
+    margin-right: 0;
+    opacity: 0.55;
+    z-index: 0;
+    pointer-events: none;
+  }
+}
+
+/* ===========================================================================
+   Section 2: the problem, the band, the belief
+   =========================================================================== */
+.q { color: var(--indigo); font-size: clamp(19px, 1.5vw, 22px); line-height: 1.5; font-style: italic; }
+
+.band-photo { position: relative; margin-block: clamp(var(--space-6), 7vw, var(--space-7)); }
+.band-photo .media { border-radius: 0; aspect-ratio: 4 / 5; }
+@media (min-width: 768px) { .band-photo .media { aspect-ratio: 16 / 7; } }
+.band-photo .over {
+  position: absolute;
+  inset: auto 0 0 0;
+  padding: var(--space-5) var(--gutter) var(--space-5) var(--gutter);
+  background: linear-gradient(to top, rgba(21, 20, 61, 0.55), rgba(21, 20, 61, 0.55) 42%, rgba(21, 20, 61, 0));
+}
+.band-photo .over p {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(24px, 2.6vw, 34px);
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  color: #FFFFFF;
+  max-width: 1200px;
+  margin-inline: auto;
+  text-wrap: balance;
+}
+
+.belief { display: flex; flex-direction: column; gap: var(--space-4); }
+.belief .struck s {
+  text-decoration-line: line-through;
+  text-decoration-color: var(--ink-muted);
+  text-decoration-thickness: 2px;
+}
+.ask {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  margin-top: var(--space-2);
+}
+.ask span.text {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(24px, 2.6vw, 36px);
+  line-height: 1.22;
+  letter-spacing: -0.02em;
+  color: var(--indigo);
+  max-width: 34ch;
+}
+.ask .dot-lg { margin-top: 0.5em; }
+
+.three-col { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.three-col > div { padding-inline: var(--space-4); display: flex; flex-direction: column; gap: var(--space-2); }
+.three-col > div:first-child { padding-left: 0; }
+.three-col > div + div { border-left: 1px solid var(--border); }
+.three-col p { color: var(--ink-muted); }
+@media (max-width: 767px) {
+  .three-col { grid-template-columns: minmax(0, 1fr); }
+  .three-col > div { padding-inline: 0; padding-block: var(--space-4); }
+  .three-col > div + div { border-left: 0; border-top: 1px solid var(--border); }
+}
+
+/* ===========================================================================
+   Section 3: how it works
+   =========================================================================== */
+.loop { position: relative; width: 100%; max-width: 900px; margin-inline: auto; }
+.loop-arcs { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.loop-arcs path {
+  fill: none;
+  stroke: var(--indigo);
+  stroke-opacity: 0.45;
+  stroke-width: 1.5;
+  vector-effect: non-scaling-stroke;
+}
+.loop-arcs .seg { stroke-dasharray: 100; stroke-dashoffset: 0; }
+.loop-centre {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  text-align: center;
+}
+.loop-centre p {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(17px, 1.4vw, 20px);
+  line-height: 1.3;
+  color: var(--ink);
+  max-width: 18ch;
+}
+.step { display: flex; flex-direction: column; gap: var(--space-2); }
+.step .n {
+  font-family: var(--font-display);
+  font-size: 48px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--indigo);
+  opacity: 0.2;
+  font-variant-numeric: tabular-nums;
+}
+.step p { color: var(--ink-muted); font-size: 17px; line-height: 1.55; }
+
+@media (min-width: 1024px) {
+  .loop { aspect-ratio: 1; }
+  .loop-arcs { display: block; }
+  .step { position: absolute; width: 248px; }
+  .step--1 { top: 0; left: 0; }
+  .step--2 { top: 0; right: 0; text-align: right; align-items: flex-end; }
+  .step--3 { bottom: 0; right: 0; text-align: right; align-items: flex-end; }
+  .step--4 { bottom: 0; left: 0; }
+  .step--2 p, .step--3 p { margin-left: auto; }
+  .loop-centre { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 260px; }
+  .loop-mobile-line { display: none; }
+}
+@media (max-width: 1023px) {
+  .loop-arcs { display: none; }
+  .loop { display: flex; flex-direction: column; gap: var(--space-5); padding-left: 44px; }
+  .loop::before {
+    content: "";
+    position: absolute;
+    left: 13px;
+    top: 14px;
+    bottom: 92px;
+    width: 1.5px;
+    background: var(--indigo);
+    opacity: 0.35;
+  }
+  .step { position: relative; }
+  .step::before {
+    content: "";
+    position: absolute;
+    left: -44px;
+    top: 8px;
+    width: 27px; height: 27px;
+    border-radius: var(--radius-pill);
+    border: 1.5px solid var(--indigo);
+    background: var(--surface);
+  }
+  .step .n { font-size: 34px; }
+  .loop-centre { align-items: flex-start; text-align: left; position: relative; }
+  .loop-centre p { max-width: 24ch; }
+  .loop-mobile-line { position: absolute; left: -44px; top: -46px; width: 28px; height: 54px; overflow: visible; }
+  .loop-mobile-line path { fill: none; stroke: var(--indigo); stroke-opacity: 0.45; stroke-width: 1.5; }
+}
+
+.callout {
+  background: var(--night);
+  border-radius: var(--radius-lg);
+  padding: clamp(var(--space-5), 4vw, 48px);
+  position: relative;
+  overflow: hidden;
+}
+.callout .grid { position: relative; z-index: 1; align-items: start; }
+.callout .big {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(22px, 2.1vw, 28px);
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+  color: var(--on-indigo);
+  max-width: 24ch;
+}
+.callout p.sub { color: var(--on-night-muted); max-width: 52ch; }
+.callout .rings {
+  position: absolute;
+  width: 320px;
+  right: -90px;
+  bottom: -130px;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* ===========================================================================
+   Section 4
+   =========================================================================== */
+/* Capped so a 4:5 portrait lands near 500px rather than 735px, which matched the 28vw the
+   media manifest asks the browser to fetch. */
+.who-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-5) var(--space-4); max-width: 840px; }
+.who-grid figure { display: flex; flex-direction: column; gap: var(--space-3); min-width: 0; }
+.who-grid .media { aspect-ratio: 4 / 5; border-radius: var(--radius-md); }
+.who-grid figcaption { display: flex; align-items: flex-start; font-size: 17px; line-height: 1.5; }
+.who-grid figcaption .dot { margin-top: 0.55em; }
+@media (min-width: 1024px) {
+  .who-grid figure:nth-child(2), .who-grid figure:nth-child(4) { margin-top: 64px; }
+}
+.belong {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(20px, 1.9vw, 26px);
+  line-height: 1.3;
+  letter-spacing: -0.02em;
+  color: var(--indigo);
+  max-width: 36ch;
+}
+
+.leave { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-5) var(--space-6); }
+@media (max-width: 767px) { .leave { grid-template-columns: minmax(0, 1fr); } }
+.leave > div { display: flex; gap: var(--space-3); min-width: 0; }
+.leave svg { width: 24px; height: 24px; flex: none; margin-top: 3px; color: var(--indigo); }
+.leave b { font-family: var(--font-display); font-weight: 600; display: block; }
+.leave p { color: var(--ink-muted); }
+
+.promises { width: 100%; border-collapse: collapse; text-align: left; }
+.promises th, .promises td { padding: var(--space-4) var(--space-4) var(--space-4) 0; border-bottom: 1px solid var(--border); vertical-align: top; }
+.promises thead th { border-bottom: 1px solid var(--border); }
+.promises thead .eyebrow { color: var(--ink-muted); }
+.promises tbody th { width: 46%; font-weight: 400; padding-right: var(--space-5); }
+.promises tbody th .never { display: flex; gap: var(--space-3); align-items: flex-start; }
+.promises tbody th span.t { font-family: var(--font-display); font-weight: 600; }
+.promises tbody th svg { width: 20px; height: 20px; flex: none; margin-top: 4px; color: var(--ink-muted); }
+.promises td { color: var(--ink-muted); }
+@media (max-width: 767px) {
+  .promises thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+  .promises tr { display: block; border-bottom: 1px solid var(--border); padding-block: var(--space-4); }
+  .promises th, .promises td { display: block; border-bottom: 0; padding: 0; width: auto; }
+  .promises td { padding-top: var(--space-2); padding-left: 36px; }
+}
+
+/* ===========================================================================
+   Section 5: join
+   =========================================================================== */
+#cohort .grid { align-items: start; }
+/* The column, not the section, is the containing block: with the section as the nearest
+   positioned ancestor, a percentage inset bled ~114px past the page edge at 1440. */
+#cohort .c1-6 { position: relative; }
+.cohort-left { position: relative; z-index: 1; display: flex; flex-direction: column; gap: var(--space-4); }
+.cohort-quiet {
+  position: absolute;
+  inset: -20px;
+  z-index: 0;
+  opacity: 0.12;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  pointer-events: none;
+}
+@media (max-width: 1023px) { .cohort-quiet { display: none; } }
+.sixty { color: var(--amber-ink); }
+
+.facts { display: grid; gap: 0; }
+.facts > div { display: grid; grid-template-columns: 130px minmax(0, 1fr); gap: var(--space-3); padding-block: 12px; border-bottom: 1px solid var(--border); }
+.facts dt {
+  font-family: var(--font-display);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  padding-top: 5px;
+}
+.facts dd { margin: 0; font-family: var(--font-display); font-weight: 600; font-size: 17px; line-height: 1.4; }
+@media (max-width: 480px) { .facts > div { grid-template-columns: minmax(0, 1fr); gap: 2px; } }
+
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: clamp(var(--space-4), 3vw, var(--space-5));
+}
+.field { display: flex; flex-direction: column; gap: var(--space-2); }
+.field label { font-family: var(--font-display); font-size: 15px; font-weight: 600; }
+.field input, .field textarea {
+  font-family: var(--font-body);
+  font-size: 17px;
+  color: var(--ink);
+  background: var(--surface-muted);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 0 14px;
+  height: 52px;
+  width: 100%;
+  min-width: 0;
+}
+.field textarea { height: auto; padding: 14px; line-height: 1.5; resize: vertical; }
+.field input:focus, .field textarea:focus { outline: 2px solid var(--indigo); outline-offset: 2px; }
+.confirm { display: flex; flex-direction: column; gap: var(--space-3); align-items: flex-start; }
+.confirm p { font-family: var(--font-display); font-weight: 600; font-size: clamp(19px, 1.6vw, 22px); line-height: 1.35; max-width: 28ch; }
+.confirm .dot-lg { animation: pulse 2.4s var(--ease) infinite; }
+@media (prefers-reduced-motion: reduce) { .confirm .dot-lg { animation: none; } }
+@keyframes pulse { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.3); opacity: 0.75; } }
+
+/* ===========================================================================
+   Section 6: partners
+   =========================================================================== */
+.partners { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.partners > div { display: flex; flex-direction: column; gap: var(--space-3); padding-inline: var(--space-4); min-width: 0; }
+.partners > div:first-child { padding-left: 0; }
+.partners > div + div { border-left: 1px solid var(--border); }
+.partners p { color: var(--ink-muted); font-size: 17px; }
+@media (max-width: 1023px) {
+  .partners { grid-template-columns: minmax(0, 1fr); }
+  .partners > div { padding-inline: 0; padding-block: var(--space-5); }
+  .partners > div + div { border-left: 0; border-top: 1px solid var(--border); }
+}
+
+/* ===========================================================================
+   Section 7: FAQ, closing, footer
+   =========================================================================== */
+.faq { max-width: 800px; border-top: 1px solid var(--border); }
+.faq details { border-bottom: 1px solid var(--border); }
+.faq summary {
+  list-style: none;
+  cursor: pointer;
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-4);
+  padding-block: var(--space-4);
+  min-height: 44px;
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.35;
+}
+.faq summary::-webkit-details-marker { display: none; }
+.faq summary .ic { margin-left: auto; flex: none; width: 20px; height: 20px; color: var(--indigo); transition: transform 240ms var(--ease); }
+.faq details[open] summary .ic { transform: rotate(45deg); }
+.faq .ans { padding: 0 0 var(--space-4); color: var(--ink-muted); max-width: 62ch; }
+
+.on-night { background: var(--night); color: var(--on-indigo); position: relative; overflow: hidden; }
+.closing { position: relative; z-index: 2; display: flex; flex-direction: column; align-items: center; gap: var(--space-4); text-align: center; }
+.closing h2 {
+  font-size: clamp(34px, 4.4vw, 56px);
+  font-weight: 700;
+  line-height: 1.06;
+  letter-spacing: -0.03em;
+  max-width: 18ch;
+}
+.closing .lead { color: var(--on-night-muted); text-align: center; }
+.closing-rings {
+  position: absolute;
+  z-index: 0;
+  width: min(760px, 120%);
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+.closing-media { position: absolute; inset: 0; z-index: 0; opacity: 0.25; pointer-events: none; }
+.closing-media .media { border-radius: 0; height: 100%; }
+
+footer { background: var(--night); color: var(--on-night-muted); position: relative; z-index: 2; }
+footer .inner { border-top: 1px solid rgba(255, 255, 255, 0.1); padding-block: var(--space-5); display: flex; flex-direction: column; gap: var(--space-4); }
+footer .lockup .word { color: var(--on-indigo); }
+.flinks { display: flex; flex-wrap: wrap; gap: var(--space-2) var(--space-4); }
+.flinks a { color: var(--on-night-muted); text-decoration: none; font-size: 15px; min-height: 44px; display: inline-flex; align-items: center; }
+.flinks a:hover { color: #FFFFFF; }
+
+/* ===========================================================================
+   Motion
+   =========================================================================== */
+.rise { opacity: 1; transform: none; transition: opacity 500ms var(--ease), transform 500ms var(--ease); }
+.rise.waiting { opacity: 0; transform: translateY(12px); }
+.media.zoom img, .media.zoom video { transform: scale(1.04); transition: transform 900ms var(--ease); }
+.media.zoom.seen img, .media.zoom.seen video { transform: scale(1); }
+
+@media (prefers-reduced-motion: reduce) {
+  .rise, .rise.waiting { opacity: 1 !important; transform: none !important; transition: none !important; }
+  .media.zoom img, .media.zoom video { transform: none !important; transition: none !important; }
+  .hero-scene canvas { display: none; }
+  * { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; }
+}
+</style>
+
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="nav" id="nav">
+  <div class="wrap">
+    <a class="lockup" href="#hero" aria-label="HiLabs home">
+      <svg viewBox="6 6 108 108" role="img" aria-label="HiLabs">
+        <g fill="none" stroke="#2B2A7A" stroke-width="8" stroke-linecap="round">
+          <path d="M74.21 16.25 A46 46 0 0 1 104.99 69.56"/>
+          <path d="M90.78 94.18 A46 46 0 0 1 29.22 94.18"/>
+          <path d="M15.01 69.56 A46 46 0 0 1 45.79 16.25"/>
+        </g>
+        <circle cx="60" cy="62" r="28" fill="none" stroke="#2B2A7A" stroke-width="4"/>
+        <circle cx="60" cy="66" r="16" fill="none" stroke="#2B2A7A" stroke-width="4"/>
+        <circle cx="60" cy="71" r="6" fill="#F2A93B"/>
+      </svg>
+      <span class="word"><b>Hi</b><i>Labs</i></span>
+    </a>
+
+    <div class="nav-links">
+      <a class="t" href="#how">How it works</a>
+      <a class="t" href="#partners">For partners</a>
+      <a class="t" href="#faq">FAQ</a>
+      <a class="btn btn--primary btn--sm" href="#cohort">Join the first cohort</a>
+    </div>
+
+    <button class="burger" type="button" id="burger" aria-expanded="false" aria-controls="sheet" aria-label="Open menu">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+        <path d="M3 6h18M3 12h18M3 18h18"/>
+      </svg>
+    </button>
+  </div>
+</header>
+
+<div class="sheet" id="sheet" hidden>
+  <div class="sheet-top">
+    <a class="lockup" href="#hero" aria-label="HiLabs home">
+      <svg viewBox="6 6 108 108" role="img" aria-label="HiLabs">
+        <g fill="none" stroke="#FFFFFF" stroke-width="8" stroke-linecap="round">
+          <path d="M74.21 16.25 A46 46 0 0 1 104.99 69.56"/>
+          <path d="M90.78 94.18 A46 46 0 0 1 29.22 94.18"/>
+          <path d="M15.01 69.56 A46 46 0 0 1 45.79 16.25"/>
+        </g>
+        <circle cx="60" cy="62" r="28" fill="none" stroke="#FFFFFF" stroke-width="4"/>
+        <circle cx="60" cy="66" r="16" fill="none" stroke="#FFFFFF" stroke-width="4"/>
+        <circle cx="60" cy="71" r="6" fill="#F2A93B"/>
+      </svg>
+      <span class="word" style="color:#FFFFFF"><b>Hi</b><i>Labs</i></span>
+    </a>
+    <button class="sheet-close" type="button" id="sheet-close" aria-label="Close menu">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+        <path d="M6 6l12 12M18 6L6 18"/>
+      </svg>
+    </button>
+  </div>
+  <nav aria-label="Main">
+    <a href="#how">How it works</a>
+    <a href="#partners">For partners</a>
+    <a href="#faq">FAQ</a>
+    <a href="#cohort">Join the first cohort</a>
+  </nav>
+</div>
+
+<main id="main">
+
+  <!-- ====================== 1. Hero ====================== -->
+  <section id="hero">
+    <div class="wrap">
+      <div class="grid">
+        <div class="hero-copy c1-7">
+          <p class="eyebrow eyebrow--amber rise">Human Intelligence Lab</p>
+          <h1 class="rise">Your grades measured what you could repeat. We want to <span class="hl">find what you can become.</span></h1>
+          <p class="lead rise">HiLabs is a new way to learn for adults of any age or background. You explore, learn among experts and build real work, guided by AI and by people who practise what they teach. No entrance exam. No transcript. Just you, going deeper than school ever let you.</p>
+          <div class="hero-cta rise">
+            <a class="btn btn--primary" href="#cohort" id="hero-cta">
+              Join the first cohort
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M4 12h15M13 6l6 6-6 6"/>
+              </svg>
+            </a>
+            <a class="link-strong" href="#how">See how it works</a>
+          </div>
+          <p class="small hero-note rise"><span class="dot"></span>Free during our first study. <span class="ph" title="To fill in before launch">[60]</span>&nbsp;places. Starts <span class="ph" title="To fill in before launch">[MONTH&nbsp;YEAR]</span>.</p>
+        </div>
+
+        <div class="hero-scene c8-12" id="hero-scene">
+          <canvas id="hero-canvas" aria-hidden="true"></canvas>
+          <svg class="rings" viewBox="0 0 200 200" aria-hidden="true">
+            <g fill="none" stroke="currentColor" stroke-width="1.5">
+              <circle cx="100" cy="92" r="92" pathLength="100" vector-effect="non-scaling-stroke"/>
+              <circle cx="100" cy="99" r="71" pathLength="100" vector-effect="non-scaling-stroke"/>
+              <circle cx="100" cy="105" r="51" pathLength="100" vector-effect="non-scaling-stroke"/>
+              <circle cx="100" cy="111" r="32" pathLength="100" vector-effect="non-scaling-stroke"/>
+              <circle cx="100" cy="116" r="15" pathLength="100" vector-effect="non-scaling-stroke"/>
+            </g>
+            <circle class="rings-core" cx="100" cy="121" r="3.75" fill="#F2A93B" style="transform-origin:100px 121px"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====================== 2. The problem and the belief ====================== -->
+  <section id="problem" class="muted pad">
+    <div class="wrap">
+      <div class="grid">
+        <div class="c1-5 stack-s rise">
+          <p class="eyebrow">The problem</p>
+          <h2>School asked one question. It was the wrong one.</h2>
+        </div>
+        <div class="c7-12 stack rise">
+          <p class="body">For most of us, school asked: <em class="q">can you reproduce the answer the examiner wants?</em> If you could, you were “bright”. If you couldn’t, you were told, in a hundred quiet ways, that you weren’t.</p>
+          <p class="body">But you know people who failed exams and built businesses. People who never finished school and can read a room, fix any engine or solve a problem no one else could see. You may be one of them.</p>
+        </div>
+      </div>
+    </div>
+
+    <figure class="band-photo">
+      <div class="media media--square zoom" data-media="problem-band">
+        <div class="placeholder">
+          <span class="tag">Photo</span>
+          <p>A mechanic or tailor at work, deeply focused on the task in their hands. Natural light, shallow depth of field, no eye contact with the camera.</p>
+        </div>
+      </div>
+      <figcaption class="over">
+        <p>Their intelligence was always there.</p>
+      </figcaption>
+    </figure>
+
+    <div class="wrap">
+      <div class="belief rise">
+        <p class="eyebrow">The belief</p>
+        <h2>Intelligence is not fixed. It is waiting to be activated.</h2>
+        <p class="lead">HiLabs is built on the Human Intelligence Models (HIMs) framework. It starts from a simple idea: everyone carries capacity that only shows up when the right environment brings it out.</p>
+        <p class="lead struck">The system just wasn’t built to look for it. So we don’t ask <s>“How smart are you?”</s></p>
+        <p class="ask">
+          <span class="dot-lg"></span>
+          <span class="text">We ask: “Where do you go deeper, and what happens when you’re given the room to?”</span>
+        </p>
+      </div>
+
+      <div class="three-col rise" style="margin-top:clamp(var(--space-6), 7vw, var(--space-7))">
+        <div>
+          <h3>Capacity is hidden</h3>
+          <p>It shows up in how you engage, not in a test score.</p>
+        </div>
+        <div>
+          <h3>Environment decides</h3>
+          <p>The right people and the right challenge bring it out.</p>
+        </div>
+        <div>
+          <h3>Work is the evidence</h3>
+          <p>What you make shows what you can do, better than a grade ever could.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====================== 3. How it works ====================== -->
+  <section id="how" class="surface pad">
+    <div class="wrap stack-l">
+      <div class="grid">
+        <div class="c1-5 stack-s rise">
+          <p class="eyebrow">How it works</p>
+          <h2>Four steps. One loop. Built around you.</h2>
+        </div>
+        <div class="c7-12 rise">
+          <p class="lead">Most courses hand you a syllabus and a deadline. HiLabs starts with you, then builds the path as it learns what pulls you in.</p>
+        </div>
+      </div>
+
+      <div class="loop" id="loop">
+        <svg class="loop-arcs" viewBox="0 0 900 900" aria-hidden="true">
+          <defs>
+            <marker id="arrow" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+              <path d="M0 1.5 L8 5 L0 8.5 z" fill="var(--indigo)" fill-opacity="0.45" stroke="none"/>
+            </marker>
+          </defs>
+          <!-- pathLength="100" makes stroke-dasharray:100 cover the whole arc, so the draw-in
+               animates instead of rendering as a dashed line. Radius 235 keeps the loop inside
+               the empty middle rather than running through the step copy. -->
+          <path class="seg" data-seg="1" pathLength="100" d="M284 284 A235 235 0 0 1 616 284" marker-end="url(#arrow)"/>
+          <path class="seg" data-seg="2" pathLength="100" d="M616 284 A235 235 0 0 1 616 616" marker-end="url(#arrow)"/>
+          <path class="seg" data-seg="3" pathLength="100" d="M616 616 A235 235 0 0 1 284 616" marker-end="url(#arrow)"/>
+          <path class="seg" data-seg="4" pathLength="100" d="M284 616 A235 235 0 0 1 284 284" marker-end="url(#arrow)"/>
+        </svg>
+
+        <div class="step step--1" data-step="1">
+          <span class="n">01</span>
+          <p class="eyebrow">Explore</p>
+          <h3>Start with a question, not a course</h3>
+          <p>Bring something you want to understand. Try short challenges in logic, design, people, data, fast learning and quick decisions. Go deeper wherever you want to. Nothing is graded and nothing is forced.</p>
+        </div>
+        <div class="step step--2" data-step="2">
+          <span class="n">02</span>
+          <p class="eyebrow">Learn</p>
+          <h3>Learn the way apprentices do</h3>
+          <p>Spend time around people who do the work well. Watch how experts think out loud, study their real cases, and pick up their judgment before anyone lectures you.</p>
+        </div>
+        <div class="step step--3" data-step="3">
+          <span class="n">03</span>
+          <p class="eyebrow">Develop</p>
+          <h3>Practise exactly what you need</h3>
+          <p>Get targeted exercises on the gaps in your own work, in the style that fits how you engage. An AI companion asks before it tells, and never does the work for you.</p>
+        </div>
+        <div class="step step--4" data-step="4">
+          <span class="n">04</span>
+          <p class="eyebrow">Demonstrate</p>
+          <h3>Leave with proof, not a promise</h3>
+          <p>Every draft, revision and project goes into your portfolio. Show people what you can actually do.</p>
+        </div>
+
+        <div class="loop-centre">
+          <svg class="loop-mobile-line" viewBox="0 0 28 54" aria-hidden="true">
+            <path d="M14 54 C 14 30, 2 34, 2 14 L 2 2" marker-end="url(#arrow)"/>
+          </svg>
+          <span class="dot-lg"></span>
+          <p>What you make shapes what comes next.</p>
+        </div>
+      </div>
+
+      <p class="lead rise" style="max-width:48ch">That loop is the whole idea.</p>
+
+      <!-- 02 Learn: a practitioner thinking out loud. Silent, muted, on-view only. -->
+      <div class="grid rise">
+        <div class="c1-6">
+          <div class="media zoom" data-media="learn-loop" style="aspect-ratio:4/3">
+            <div class="placeholder">
+              <span class="tag">Video, silent, 8–12s</span>
+              <p>A practitioner thinking out loud at a whiteboard or workbench while a learner watches. Poster frame graded to match.</p>
+            </div>
+          </div>
+        </div>
+        <div class="c7-12 stack-s">
+          <p class="eyebrow">Step 02, in practice</p>
+          <h3>Watch how experts think out loud</h3>
+          <p class="body">An experienced practitioner works through a real problem aloud at a workbench while a learner watches. No lecture, no slides, no marks: judgment is picked up by being near it.</p>
+        </div>
+      </div>
+
+      <div class="callout rise">
+        <svg class="rings rings--night" viewBox="0 0 200 200" aria-hidden="true">
+          <g fill="none" stroke="currentColor" stroke-width="1.5">
+            <circle cx="100" cy="92" r="92" pathLength="100" vector-effect="non-scaling-stroke"/>
+            <circle cx="100" cy="99" r="71" pathLength="100" vector-effect="non-scaling-stroke"/>
+            <circle cx="100" cy="105" r="51" pathLength="100" vector-effect="non-scaling-stroke"/>
+            <circle cx="100" cy="111" r="32" pathLength="100" vector-effect="non-scaling-stroke"/>
+            <circle cx="100" cy="116" r="15" pathLength="100" vector-effect="non-scaling-stroke"/>
+          </g>
+          <circle class="rings-core" cx="100" cy="121" r="7.5" fill="#F2A93B" style="transform-origin:100px 121px"/>
+        </svg>
+        <div class="grid">
+          <p class="big c1-6">An AI companion that makes you think harder, not less.</p>
+          <p class="sub c7-12">It questions your reasoning, points you to the source behind every explanation, and says when it isn’t sure. It will never tell you what kind of mind you have.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====================== 4a. Who it's for ====================== -->
+  <section id="who" class="muted pad">
+    <div class="wrap stack-l">
+      <div class="grid">
+        <div class="c1-5 stack-s rise">
+          <p class="eyebrow">Who it’s for</p>
+          <h2>For anyone who was ever told they weren’t “academic”.</h2>
+        </div>
+      </div>
+
+      <div class="who-grid rise">
+        <figure>
+          <div class="media zoom" data-media="who-graduate">
+            <div class="placeholder">
+              <span class="tag">Photo</span>
+              <p>A young adult at a home desk at night, notebook and phone, frowning at a hard problem.</p>
+            </div>
+          </div>
+          <figcaption><span class="dot"></span><span>The graduate who passed every exam and still feels they never learned to think.</span></figcaption>
+        </figure>
+        <figure>
+          <div class="media zoom" data-media="who-builder">
+            <div class="placeholder">
+              <span class="tag">Photo</span>
+              <p>A trader or maker at a market stall or workshop, hands mid-task, explaining something to a friend.</p>
+            </div>
+          </div>
+          <figcaption><span class="dot"></span><span>The builder, trader or creator who learned everything outside a classroom.</span></figcaption>
+        </figure>
+        <figure>
+          <div class="media zoom" data-media="who-professional">
+            <div class="placeholder">
+              <span class="tag">Photo</span>
+              <p>A mid-career adult in a Lagos co-working space, sketching a diagram on paper rather than looking at a screen.</p>
+            </div>
+          </div>
+          <figcaption><span class="dot"></span><span>The professional at 35 or 55 who wants to change direction.</span></figcaption>
+        </figure>
+        <figure>
+          <div class="media zoom" data-media="who-curious">
+            <div class="placeholder">
+              <span class="tag">Photo</span>
+              <p>An older adult reading on a phone during a bus ride, absorbed.</p>
+            </div>
+          </div>
+          <figcaption><span class="dot"></span><span>The curious person who simply wants to understand the world properly this time.</span></figcaption>
+        </figure>
+      </div>
+
+      <p class="belong rise">If you’re 18 or over and willing to put in about 4 hours a week, you belong here.</p>
+    </div>
+  </section>
+
+  <!-- ====================== 4b. What you leave with, 4c. Promises ====================== -->
+  <section id="leave" class="surface pad">
+    <div class="wrap stack-l">
+      <div class="grid">
+        <div class="c1-5 stack-s rise">
+          <p class="eyebrow">What you leave with</p>
+          <h2>What you’ll walk away with</h2>
+        </div>
+      </div>
+
+      <div class="leave rise">
+        <div>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M3 7.5h18v11a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 18.5z"/>
+            <path d="M9 7.5V6a1.5 1.5 0 0 1 1.5-1.5h3A1.5 1.5 0 0 1 15 6v1.5"/>
+            <path d="M3 12h18"/>
+          </svg>
+          <p><b>A portfolio of real work.</b>Problems you analysed, systems you mapped, ideas you defended, with every revision dated.</p>
+        </div>
+        <div>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="5" r="2.5"/>
+            <circle cx="5" cy="18" r="2.5"/>
+            <circle cx="19" cy="18" r="2.5"/>
+            <path d="M12 7.5v4m0 0L6.5 15.8m5.5-4.3 5.5 4.3"/>
+          </svg>
+          <p><b>Sharper thinking you can see.</b>The ability to break down an unfamiliar problem, weigh evidence and consider other answers.</p>
+        </div>
+        <div>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="9"/>
+            <path d="M15.2 8.8 10.5 10.5 8.8 15.2 13.5 13.5z"/>
+          </svg>
+          <p><b>A clearer sense of where you go deep.</b>Not a label, but honest observations of what you chose, where you persisted and what you made.</p>
+        </div>
+        <div>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="9" cy="8" r="3"/>
+            <path d="M3.5 19.5a5.5 5.5 0 0 1 11 0"/>
+            <path d="M16 5.6a3 3 0 0 1 0 4.8"/>
+            <path d="M17.5 14.3a5.5 5.5 0 0 1 3 5.2"/>
+          </svg>
+          <p><b>Time with practitioners.</b>Live sessions with people who do this work for real.</p>
+        </div>
+      </div>
+
+      <hr class="rule">
+
+      <div class="grid">
+        <div class="c1-5 stack-s rise">
+          <p class="eyebrow">What we never do</p>
+          <h2>Our promises to you</h2>
+        </div>
+      </div>
+
+      <div class="rise" style="overflow-x:auto">
+        <table class="promises">
+          <thead>
+            <tr>
+              <th scope="col"><span class="eyebrow">We never</span></th>
+              <th scope="col"><span class="eyebrow">Because</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row"><span class="never"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M6 18 18 6"/></svg><span class="t">Give you an intelligence score or type</span></span></th>
+              <td>You are not a number, and a new label is no better than an old one.</td>
+            </tr>
+            <tr>
+              <th scope="row"><span class="never"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M6 18 18 6"/></svg><span class="t">Rank you against other learners</span></span></th>
+              <td>Learning is not a race.</td>
+            </tr>
+            <tr>
+              <th scope="row"><span class="never"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M6 18 18 6"/></svg><span class="t">Ask for your grades, school or certificates</span></span></th>
+              <td>Where you’ve been doesn’t limit where you can go.</td>
+            </tr>
+            <tr>
+              <th scope="row"><span class="never"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M6 18 18 6"/></svg><span class="t">Share your data without your clear consent</span></span></th>
+              <td>Your work and reflections belong to you. You can download or delete them at any time.</td>
+            </tr>
+            <tr>
+              <th scope="row"><span class="never"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M6 18 18 6"/></svg><span class="t">Claim more than we know</span></span></th>
+              <td>HiLabs is testing a new idea, and we’ll tell you what we find, including what doesn’t work.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====================== 5. Join the first cohort ====================== -->
+  <section id="cohort" class="muted pad">
+    <div class="wrap">
+      <div class="grid">
+        <div class="c1-6">
+          <div class="cohort-quiet">
+            <div class="media" data-media="cohort-quiet" style="height:100%">
+              <div class="placeholder"><span class="tag">Photo</span><p>Someone on a phone at night with a notebook open beside them. Calm, low light.</p></div>
+            </div>
+          </div>
+          <div class="cohort-left rise">
+            <p class="eyebrow">Join the first cohort</p>
+            <h2>Be one of the first <span class="sixty">60</span>.</h2>
+            <p class="lead">Our first cohort is also a study. You’ll learn critical and systems thinking: how to break down messy problems, see how the parts connect, and reason your way to better decisions. These are skills every field rewards.</p>
+            <p class="body">In return, you help us find out whether this way of learning works better. You’ll be among the first people anywhere to try it.</p>
+            <dl class="facts">
+              <div><dt>What you learn</dt><dd>Critical and systems thinking</dd></div>
+              <div><dt>How long</dt><dd>4 weeks, about 4 hours a week</dd></div>
+              <div><dt>Where</dt><dd>Online, on your phone or laptop, built to work on low data</dd></div>
+              <div><dt>Who</dt><dd>Adults 18 and over, any background, anywhere</dd></div>
+              <div><dt>Cost</dt><dd>Free</dd></div>
+              <div><dt>Places</dt><dd><span class="ph" title="To fill in before launch">[60]</span></dd></div>
+              <div><dt>Starts</dt><dd><span class="ph" title="To fill in before launch">[MONTH YEAR]</span></dd></div>
+            </dl>
+          </div>
+        </div>
+
+        <div class="c7-12 rise">
+          <div class="panel">
+            <!-- TODO: real submission. POST these fields to the cohort sign-up endpoint and only
+                 then show the confirmation. Wire this up together with the consent document, since
+                 nothing may be stored about a person before they have been told what is collected
+                 and why. Until then the handler below only swaps in the confirmation state. -->
+            <form class="stack" id="join" novalidate>
+              <div class="field">
+                <label for="j-name">First name</label>
+                <input id="j-name" name="name" type="text" autocomplete="given-name" required>
+              </div>
+              <div class="field">
+                <label for="j-email">Email</label>
+                <input id="j-email" name="email" type="email" autocomplete="email" required>
+              </div>
+              <div class="field">
+                <label for="j-country">Country</label>
+                <input id="j-country" name="country" type="text" autocomplete="country-name" required>
+              </div>
+              <div class="field">
+                <label for="j-why">What’s one thing you’ve always wanted to understand properly?</label>
+                <textarea id="j-why" name="why" rows="3"></textarea>
+              </div>
+              <button class="btn btn--primary btn--full" type="submit">Request my place</button>
+            </form>
+
+            <div class="confirm" id="join-done" hidden>
+              <span class="dot-lg"></span>
+              <p>You’re on the list. We’ll email you before <span class="ph" title="To fill in before launch">[DATE]</span> with next steps.</p>
+            </div>
+          </div>
+
+          <p class="small" style="color:var(--ink-muted);margin-top:var(--space-4);max-width:62ch">Learners are placed at random in one of two versions of the programme. Both use the same materials, mentors and AI companion. Both end with a full portfolio of your work. We’ll explain exactly what we collect and why before you begin, and you can leave at any time.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====================== 6. Build it with us ====================== -->
+  <section id="partners" class="surface pad">
+    <div class="wrap stack-l">
+      <div class="stack-s rise" style="align-items:center;text-align:center">
+        <p class="eyebrow">Build it with us</p>
+        <h2 style="max-width:30ch">HiLabs succeeds when it is tested, not when it is believed.</h2>
+        <p class="lead" style="max-width:56ch">We’re looking for people who want to help prove, improve or disprove a new idea about how humans learn.</p>
+      </div>
+
+      <div class="partners rise">
+        <div>
+          <p class="eyebrow">Practitioners</p>
+          <h3>Let learners see how you think</h3>
+          <p>You’re an analyst, designer, engineer, strategist or problem-solver who does this work daily. Give one live session a week to a small group, or record how you work through a real problem. Learners absorb judgment from people like you.</p>
+          <a class="link-arrow" href="#contact">Become a practitioner
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6"/></svg>
+          </a>
+        </div>
+        <div>
+          <p class="eyebrow">Researchers</p>
+          <h3>Challenge our framework</h3>
+          <p>We want an education or cognitive scientist who will question our ideas hard: the GIM types, how we match teaching to them, and how we measure depth. We publish our predictions before the study, and our results after it, including the ones that go against us.</p>
+          <a class="link-arrow" href="#contact">Partner on the research
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6"/></svg>
+          </a>
+        </div>
+        <div>
+          <p class="eyebrow">Funders</p>
+          <h3>Fund an open experiment in learning</h3>
+          <p>Your support covers data costs for learners, practitioners’ time and the AI that runs the companion. In return, you back a transparent study with published findings, led from Africa and built for the world.</p>
+          <a class="link-arrow" href="#contact">Talk to us about funding
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6"/></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====================== 7. FAQ ====================== -->
+  <section id="faq" class="surface" style="padding-bottom:clamp(var(--space-7), 9vw, var(--space-8))">
+    <div class="wrap stack-l">
+      <div class="stack-s rise">
+        <p class="eyebrow">Questions</p>
+        <h2>Before you decide</h2>
+      </div>
+
+      <div class="faq rise">
+        <details>
+          <summary>Do I need a degree or good grades?
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+          </summary>
+          <div class="ans">No. We never ask for them. All you need is curiosity and about 4 hours a week.</div>
+        </details>
+        <details>
+          <summary>Is this a school? Will I get a certificate?
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+          </summary>
+          <div class="ans">HiLabs isn’t a school, and the first cohort doesn’t award certificates. You leave with something more useful: a portfolio of dated work that shows how you think. It complements formal qualifications rather than replacing them.</div>
+        </details>
+        <details>
+          <summary>Is it really free?
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+          </summary>
+          <div class="ans">Yes, for the first cohort. You’re helping us test the approach, so we don’t charge you for it.</div>
+        </details>
+        <details>
+          <summary>What is HIMs?
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+          </summary>
+          <div class="ans">Human Intelligence Models is the framework behind HiLabs. It builds on decades of research by Howard Gardner, Lev Vygotsky, Carol Dweck and others. It sees intelligence as hidden capacity, shaped by environment and shown through what you make. Some of its ideas are well established; others are new and still being tested. HiLabs is where we test them.</div>
+        </details>
+        <details>
+          <summary>Will the AI just give me the answers?
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+          </summary>
+          <div class="ans">No. It’s designed to ask before it tells and to help you reason. It never writes your work for you.</div>
+        </details>
+        <details>
+          <summary>Will you tell me what kind of intelligence I have?
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+          </summary>
+          <div class="ans">Not as a label. At the end of your journey, a practitioner talks you through what you did: where you went deeper, where you kept going, and what you might explore next. Every observation links to your own work, and you can disagree with any of it.</div>
+        </details>
+        <details>
+          <summary>What happens to my data?
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+          </summary>
+          <div class="ans">We collect only what the study needs. We never sell it. You can download or delete everything at any time.</div>
+        </details>
+        <details>
+          <summary>What comes after critical thinking?
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+          </summary>
+          <div class="ans">Mathematics and language are next.</div>
+        </details>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====================== Closing ====================== -->
+  <section class="on-night pad" id="closing">
+    <div class="closing-media" data-media="closing-loop" aria-hidden="true">
+      <div class="media media--square">
+        <div class="placeholder"><span class="tag">Video, silent, optional</span><p>Hands drawing interconnected circles on paper, slow.</p></div>
+      </div>
+    </div>
+    <svg class="rings rings--night closing-rings" viewBox="0 0 200 200" aria-hidden="true">
+      <g fill="none" stroke="currentColor" stroke-width="1.5">
+        <circle cx="100" cy="92" r="92" pathLength="100" vector-effect="non-scaling-stroke"/>
+        <circle cx="100" cy="99" r="71" pathLength="100" vector-effect="non-scaling-stroke"/>
+        <circle cx="100" cy="105" r="51" pathLength="100" vector-effect="non-scaling-stroke"/>
+        <circle cx="100" cy="111" r="32" pathLength="100" vector-effect="non-scaling-stroke"/>
+        <circle cx="100" cy="116" r="15" pathLength="100" vector-effect="non-scaling-stroke"/>
+      </g>
+      <circle class="rings-core" cx="100" cy="121" r="2.1" fill="#F2A93B" style="transform-origin:100px 121px"/>
+    </svg>
+    <div class="wrap">
+      <div class="closing">
+        <h2 class="rise">You were never short of intelligence. You were short of the right room.</h2>
+        <p class="lead rise">Come and find out what you can do when you have it.</p>
+        <a class="btn btn--amber rise" href="#cohort">
+          Join the first cohort
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h15M13 6l6 6-6 6"/></svg>
+        </a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer id="contact" class="on-night">
+  <div class="wrap">
+    <div class="inner">
+      <a class="lockup" href="#hero" aria-label="HiLabs home">
+        <svg viewBox="6 6 108 108" role="img" aria-label="HiLabs">
+          <g fill="none" stroke="#FFFFFF" stroke-width="8" stroke-linecap="round">
+            <path d="M74.21 16.25 A46 46 0 0 1 104.99 69.56"/>
+            <path d="M90.78 94.18 A46 46 0 0 1 29.22 94.18"/>
+            <path d="M15.01 69.56 A46 46 0 0 1 45.79 16.25"/>
+          </g>
+          <circle cx="60" cy="62" r="28" fill="none" stroke="#FFFFFF" stroke-width="4"/>
+          <circle cx="60" cy="66" r="16" fill="none" stroke="#FFFFFF" stroke-width="4"/>
+          <circle cx="60" cy="71" r="6" fill="#F2A93B"/>
+        </svg>
+        <span class="word"><b>Hi</b><i>Labs</i></span>
+      </a>
+      <p class="small">HiLabs: the Human Intelligence Lab Project</p>
+      <nav class="flinks" aria-label="Footer">
+        <a href="#how">How it works</a>
+        <a href="#cohort">Join the cohort</a>
+        <a href="#partners">Practitioners</a>
+        <a href="#partners">Research</a>
+        <a href="#partners">Funding</a>
+        <a href="#faq">Privacy</a>
+        <a href="credits.html">Photo credits</a>
+        <a href="#contact">Contact</a>
+      </nav>
+      <p class="small">Built in Nigeria, open to the world.</p>
+      <p class="small">Contact: <span class="ph" title="To fill in before launch">[EMAIL ADDRESS]</span></p>
+    </div>
+  </div>
+</footer>
+
+<script type="module">
+  const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  /* ---------------- nav ---------------- */
+
+  const nav = document.getElementById("nav");
+  const onScroll = () => nav.classList.toggle("scrolled", window.scrollY > 8);
+  window.addEventListener("scroll", onScroll, { passive: true });
+  onScroll();
+
+  const sheet = document.getElementById("sheet");
+  const burger = document.getElementById("burger");
+  const openSheet = (open) => {
+    sheet.hidden = !open;
+    burger.setAttribute("aria-expanded", String(open));
+    document.body.style.overflow = open ? "hidden" : "";
+    if (open) sheet.querySelector("nav a").focus();
+    else burger.focus();
+  };
+  burger.addEventListener("click", () => openSheet(true));
+  document.getElementById("sheet-close").addEventListener("click", () => openSheet(false));
+  sheet.addEventListener("click", (e) => { if (e.target.closest("a")) openSheet(false); });
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !sheet.hidden) openSheet(false); });
+
+  /* ---------------- rise on enter ----------------
+     Content starts visible. Only what is below the fold is hidden, and only once we know we
+     can bring it back, so a JavaScript failure never leaves the page blank. */
+
+  if (!reduced && "IntersectionObserver" in window) {
+    const items = [...document.querySelectorAll(".rise")].filter(
+      (el) => el.getBoundingClientRect().top > window.innerHeight * 0.92
+    );
+    items.forEach((el) => el.classList.add("waiting"));
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.remove("waiting");
+        io.unobserve(entry.target);
+      });
+    }, { rootMargin: "0px 0px -10% 0px", threshold: 0.05 });
+    items.forEach((el) => io.observe(el));
+  }
+
+  /* ---------------- photos easing in ---------------- */
+
+  if (!reduced && "IntersectionObserver" in window) {
+    const zoomIo = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add("seen");
+        zoomIo.unobserve(entry.target);
+      });
+    }, { threshold: 0.15 });
+    document.querySelectorAll(".media.zoom").forEach((el) => zoomIo.observe(el));
+  }
+
+  /* ---------------- the loop's arcs draw in with the steps ---------------- */
+
+  const segs = [...document.querySelectorAll(".loop-arcs .seg")];
+  if (segs.length && !reduced && "IntersectionObserver" in window) {
+    const desktop = window.matchMedia("(min-width: 1024px)");
+    if (desktop.matches) {
+      segs.forEach((s) => { s.style.strokeDashoffset = "100"; s.style.transition = "stroke-dashoffset 700ms cubic-bezier(0.22, 1, 0.36, 1)"; });
+      const stepIo = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          const i = Number(entry.target.dataset.step);
+          const seg = segs.find((s) => Number(s.dataset.seg) === i);
+          if (seg) seg.style.strokeDashoffset = "0";
+          stepIo.unobserve(entry.target);
+        });
+      }, { threshold: 0.5 });
+      document.querySelectorAll(".step").forEach((el) => stepIo.observe(el));
+    }
+  }
+
+  /* ---------------- sign-up form ---------------- */
+
+  const join = document.getElementById("join");
+  const done = document.getElementById("join-done");
+  join.addEventListener("submit", (event) => {
+    event.preventDefault();
+    if (!join.reportValidity()) return;
+    // TODO: send the fields to the real endpoint here, and only swap in the confirmation
+    // once it has accepted them.
+    join.hidden = true;
+    done.hidden = false;
+    done.setAttribute("role", "status");
+    done.querySelector("p").focus?.();
+  });
+
+  /* ---------------- media ----------------
+     Every slot keeps its labelled placeholder until media.js carries a real path. */
+
+  (async () => {
+    let media, mediaAllowed;
+    try {
+      ({ media, mediaAllowed } = await import("./media.js"));
+    } catch (err) {
+      return;
+    }
+    const heavy = mediaAllowed();
+
+    document.querySelectorAll("[data-media]").forEach((slot) => {
+      const entry = media[slot.dataset.media];
+      if (!entry) return;
+      const box = slot.classList.contains("media") ? slot : slot.querySelector(".media");
+      if (!box) return;
+
+      if (entry.kind === "image" && entry.base) {
+        box.replaceChildren(picture(entry));
+      } else if (entry.kind === "video" && entry.poster) {
+        box.replaceChildren(heavy && entry.mp4 ? video(entry) : poster(entry));
+      }
+    });
+
+    function srcset(base, ext, widths) {
+      return widths.map((w) => `${base}-${w}.${ext} ${w}w`).join(", ");
+    }
+    function picture(entry) {
+      const el = document.createElement("picture");
+      for (const ext of ["avif", "webp"]) {
+        const source = document.createElement("source");
+        source.type = `image/${ext}`;
+        source.srcset = srcset(entry.base, ext, entry.widths);
+        source.sizes = entry.sizes;
+        el.appendChild(source);
+      }
+      const img = document.createElement("img");
+      img.src = `${entry.base}-${entry.widths[entry.widths.length - 1]}.webp`;
+      img.alt = entry.alt || "";
+      img.loading = "lazy";
+      img.decoding = "async";
+      img.width = entry.ratio[0] * 100;
+      img.height = entry.ratio[1] * 100;
+      el.appendChild(img);
+      return el;
+    }
+    function poster(entry) {
+      const img = document.createElement("img");
+      img.src = entry.poster;
+      img.alt = entry.alt || "";
+      img.loading = "lazy";
+      img.decoding = "async";
+      img.width = entry.ratio[0] * 100;
+      img.height = entry.ratio[1] * 100;
+      return img;
+    }
+    function video(entry) {
+      const el = document.createElement("video");
+      el.muted = true;
+      el.loop = true;
+      el.playsInline = true;
+      el.controls = false;
+      el.preload = "none";
+      el.poster = entry.poster;
+      el.setAttribute("aria-hidden", "true");
+      el.width = entry.ratio[0] * 100;
+      el.height = entry.ratio[1] * 100;
+      for (const [type, src] of [["video/webm", entry.webm], ["video/mp4", entry.mp4]]) {
+        if (!src) continue;
+        const source = document.createElement("source");
+        source.type = type;
+        source.src = src;
+        el.appendChild(source);
+      }
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach((e) => (e.isIntersecting ? el.play().catch(() => {}) : el.pause()));
+      }, { threshold: 0.25 });
+      io.observe(el);
+      return el;
+    }
+  })();
+
+  /* ---------------- the hero scene ----------------
+     A layer on top of a page that is already finished: the static SVG rings stay until the
+     scene is live, and stay for good if any condition fails. */
+
+  (async () => {
+    if (reduced) return;
+    const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+    if (conn && conn.saveData) return;
+    if ((navigator.hardwareConcurrency || 0) < 4) return;
+    try {
+      const probe = document.createElement("canvas");
+      if (!probe.getContext("webgl2") && !probe.getContext("webgl")) return;
+    } catch (err) {
+      return;
+    }
+
+    const host = document.getElementById("hero-scene");
+    const canvas = document.getElementById("hero-canvas");
+    const read = (name) => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+    const tokens = { indigo: read("--indigo"), amber: read("--amber"), surface: read("--surface") };
+
+    let scene;
+    try {
+      const { createHeroScene } = await import("./hero-scene.js");
+      scene = await createHeroScene({
+        canvas,
+        host,
+        tokens,
+        reduced,
+        mobile: window.matchMedia("(max-width: 1023px)").matches,
+        onLost: () => host.classList.remove("scene-live")
+      });
+    } catch (err) {
+      return; // the SVG rings are already there and already finished
+    }
+
+    canvas.classList.add("live");
+    host.classList.add("scene-live");
+
+    const cta = document.getElementById("hero-cta");
+    cta.addEventListener("pointerenter", () => scene.pulse());
+    cta.addEventListener("focus", () => scene.pulse());
+  })();
+</script>

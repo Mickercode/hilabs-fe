@@ -1,13 +1,55 @@
+/* HiLabs design system tokens.
+ *
+ * These are the brand's own values. Nothing in the app declares a colour, a typeface, a spacing
+ * step or a radius outside this block — a second source of truth for them drifts from the brand
+ * within a sprint. There is no utility framework here for the same reason.
+ */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* colour */
+  --indigo: #2b2a7a;
+  --indigo-strong: #1f1e5c;
+  --amber: #f2a93b;
+  --amber-ink: #a86200;
+  --night: #15143d;
+  --surface: #ffffff;
+  --surface-muted: #f4f4f9;
+  --ink: #1b1a3a;
+  --ink-muted: #55556f;
+  --border: #dadae6;
+  --on-indigo: #ffffff;
+  --on-night-muted: #b4b3cf;
+  --good: #1f7a4d;
+  --critical: #b42318;
+
+  /* type: --font-sora and --font-source-sans are bound by next/font in layout.tsx */
+  --font-display: var(--font-sora), system-ui, sans-serif;
+  --font-body: var(--font-source-sans), system-ui, sans-serif;
+
+  /* spacing */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 16px;
+  --space-4: 24px;
+  --space-5: 40px;
+  --space-6: 64px;
+  --space-7: 96px;
+  --space-8: 144px;
+
+  /* shape */
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 24px;
+  --radius-pill: 999px;
+
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+
+  color-scheme: light;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
 }
 
 html {
@@ -22,28 +64,54 @@ body {
 
 body {
   min-height: 100%;
+  margin: 0;
   display: flex;
   flex-direction: column;
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--surface);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 17px;
+  line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-* {
-  box-sizing: border-box;
-  padding: 0;
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+  text-wrap: balance;
+  margin: 0;
+}
+
+p {
   margin: 0;
 }
 
 a {
-  color: inherit;
-  text-decoration: none;
+  color: var(--indigo);
 }
 
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
+a:hover {
+  color: var(--indigo-strong);
+}
+
+a:focus-visible,
+button:focus-visible {
+  outline: 2px solid var(--indigo);
+  outline-offset: 3px;
+  border-radius: var(--radius-sm);
+}
+
+/* Learners arrive on mid-range phones over slow connections, and some will have motion
+ * sensitivity. Both are requirements, not preferences. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
   }
 }

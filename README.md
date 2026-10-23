@@ -1,36 +1,57 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# hilabs-fe
 
-## Getting Started
+The HiLabs learner application: Next.js and React. The marketing home page lives here too, as a
+static site.
 
-First, run the development server:
+HiLabs is a learning platform and a research study. Learners explore, learn among practitioners,
+practise against the gaps in their own work, and leave with a portfolio. No grades, no rankings,
+no labels.
 
-```bash
+## Stack
+
+| | |
+| --- | --- |
+| Runtime | Node 22 |
+| Framework | Next.js 16, React 19, TypeScript |
+| Styling | CSS custom properties from the HiLabs design system. No utility framework |
+
+Styling deliberately uses the design system's own tokens rather than a utility framework: the
+brand already defines colour, type, spacing and radius as tokens, and a second source of truth for
+those would drift from it.
+
+## Two things in one repo
+
+| Path | What it is | How it deploys |
+| --- | --- | --- |
+| `app/` | The learner application | Next.js server |
+| `marketing/` | The home page | Static files |
+
+`marketing/` is plain HTML, one inline stylesheet and two small JS modules. It is **not** a React
+app and should not become one. It is the page most people meet on the worst connection, so it
+loads without a bundle, works with WebGL disabled, and works on save-data. `marketing/verify.py`
+checks it against the design brief on every push: token colours only, the two brand typefaces
+only, the logo unmodified, WCAG AA on every text-on-background pair, and every copy passage
+matching the agreed wording.
+
+## Low bandwidth is a requirement
+
+Many learners will arrive on a mid-range Android over a slow connection. First load stays under
+400KB, Largest Contentful Paint under 2.5s, and anything heavier — 3D, video, large imagery —
+loads afterwards, and only when the device and connection allow it.
+
+## Getting started
+
+```sh
+npm ci
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+The marketing page needs no build. Serve it from any static host, or locally:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```sh
+python -m http.server 8080 --directory marketing
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Branches
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+`production` and `staging`, feature branches off `staging`. See [CONTRIBUTING.md](CONTRIBUTING.md).

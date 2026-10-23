@@ -1,0 +1,46 @@
+name: CI
+
+on:
+  push:
+    branches: [production, staging]
+  pull_request:
+    branches: [production, staging]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  app:
+    name: Lint, types, build
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - run: npm ci
+      - run: npm run lint
+      - run: npx tsc --noEmit
+      - run: npm run build
+
+  marketing:
+    name: Marketing page checks
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      # Token colours only, Sora and Source Sans 3 only, the logo unmodified, WCAG AA on every
+      # text-on-background pair, WebGL confined to the hero, and every copy passage matching
+      # the agreed wording.
+      - name: Check the home page against the design brief
+        run: python -I marketing/verify.py
