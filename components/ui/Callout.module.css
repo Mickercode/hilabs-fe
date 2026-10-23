@@ -1,0 +1,24 @@
+.callout {
+  display: flex;
+  gap: var(--space-3);
+  align-items: flex-start;
+  padding: var(--space-4);
+  border-radius: var(--radius-md);
+  background: var(--surface-muted);
+}
+
+.dot {
+  flex: none;
+  width: 10px;
+  height: 10px;
+  margin-top: 7px;
+  border-radius: var(--radius-pill);
+  background: var(--amber);
+}
+
+.body {
+  color: var(--ink-muted);
+  font-size: 16px;
+  line-height: 1.55;
+  min-width: 0;
+}
