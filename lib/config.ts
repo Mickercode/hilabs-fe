@@ -5,7 +5,16 @@
  * and the bundle is readable by anyone.
  */
 export const config = {
-  apiUrl: process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3000/api/v1',
+  /**
+   * What the browser calls. Relative on purpose: requests go to this app's own origin and are
+   * proxied to the API by the rewrite in next.config.ts, so the session cookie is first-party.
+   * Pointing this at the API directly puts the cookie on the wrong host and the learner is
+   * bounced back to sign-in after signing in.
+   */
+  apiUrl: '/api/v1',
+
+  /** What the server calls. A server fetch needs an absolute URL and does not use the rewrite. */
+  apiOrigin: process.env.API_ORIGIN ?? 'http://127.0.0.1:3000',
   marketingUrl: process.env.NEXT_PUBLIC_MARKETING_URL ?? '/',
 
   /**

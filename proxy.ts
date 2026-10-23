@@ -42,5 +42,7 @@ export function proxy(request: NextRequest) {
 
 export const config = {
   // Everything except Next's own assets and the files served from public/.
-  matcher: ['/((?!_next/static|_next/image|icon.svg|favicon.ico).*)'],
+  // `api` is excluded: those requests are proxied to the API, and redirecting them would send
+  // the sign-in request itself to the sign-in page.
+  matcher: ['/((?!api|_next/static|_next/image|icon.svg|favicon.ico).*)'],
 };
