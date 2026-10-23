@@ -33,6 +33,38 @@ checks it against the design brief on every push: token colours only, the two br
 only, the logo unmodified, WCAG AA on every text-on-background pair, and every copy passage
 matching the agreed wording.
 
+## Structure
+
+```
+app/
+  layout.tsx               fonts, metadata, the design tokens
+  error.tsx                a real message and one action, not an apology
+  not-found.tsx
+  loading.tsx
+  (learner)/               the learner journey, inside the app shell
+    layout.tsx
+    page.tsx               the four steps, and where each one leads
+    explore/               01 the six Discovery challenges
+    learn/                 02 practitioner material from the library
+    develop/               03 targeted practice
+    demonstrate/           04 the portfolio
+components/
+  ui/                      Button, Card, Callout, PageHeader
+  layout/                  AppShell, AppNav, Logo
+lib/
+  api/                     one typed client, one module per domain
+  config.ts                runtime configuration
+  steps.ts                 the four steps, defined once
+types/api.ts               the shapes the API returns
+marketing/                 the static home page
+```
+
+Pages keep their async work in a child component behind `<Suspense>`, so the shell prerenders
+and only the data streams. `/explore` and `/learn` build as partial prerenders for that reason.
+
+API field names stay `snake_case` because they come from the database, which owns the schema.
+Renaming them here would add a layer that drifts the first time a column is added.
+
 ## Low bandwidth is a requirement
 
 Many learners will arrive on a mid-range Android over a slow connection. First load stays under
@@ -42,9 +74,13 @@ loads afterwards, and only when the device and connection allow it.
 ## Getting started
 
 ```sh
+cp .env.example .env.local
 npm ci
 npm run dev
 ```
+
+The app expects the API from the `hilabs-be` repository on `http://localhost:3000`. Without it
+the pages still render: each data view says the API is unreachable rather than failing.
 
 The marketing page needs no build. Serve it from any static host, or locally:
 
