@@ -25,7 +25,12 @@ jobs:
 
       - run: npm ci
       - run: npm run lint
+
+      # Next generates the route, page and layout types into .next/types, so on a clean
+      # checkout `tsc --noEmit` cannot see LayoutProps until they exist.
+      - run: npx next typegen
       - run: npx tsc --noEmit
+
       - run: npm run build
 
   marketing:
