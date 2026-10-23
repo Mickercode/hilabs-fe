@@ -1,10 +1,18 @@
 import Link from 'next/link';
 import type { ReactNode } from 'react';
+import type { CurrentAccount } from '../../lib/api/auth';
 import { AppNav } from './AppNav';
 import { Logo } from './Logo';
+import { SignOutButton } from './SignOutButton';
 import styles from './AppShell.module.css';
 
-export function AppShell({ children }: { children: ReactNode }) {
+export function AppShell({
+  children,
+  account,
+}: {
+  children: ReactNode;
+  account: CurrentAccount;
+}) {
   return (
     <div className={styles.shell}>
       <header className={styles.header}>
@@ -19,6 +27,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           <div className={styles.navSlot}>
             <AppNav />
           </div>
+          <SignOutButton email={account.email} />
         </div>
       </header>
 

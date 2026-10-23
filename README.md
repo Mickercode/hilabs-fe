@@ -65,6 +65,29 @@ and only the data streams. `/explore` and `/learn` build as partial prerenders f
 API field names stay `snake_case` because they come from the database, which owns the schema.
 Renaming them here would add a layer that drifts the first time a column is added.
 
+## Signing in
+
+`proxy.ts` is the route gate. It has to be there rather than in a layout: with Cache Components
+the static shell goes out with a 200 before the dynamic part streams, so a `redirect()` in a
+layout arrives after the page HTML has already been sent. Proxy runs before anything renders, so
+an unauthenticated request gets a real 307.
+
+It only checks that a session cookie is present. Whether it is still valid is the API's answer,
+and `requireAccount()` in the learner layout handles an expired one — validating in the proxy
+would mean an API call on every navigation, including every prefetch.
+
+Two clients, deliberately separate:
+
+| | Used by | Why |
+| --- | --- | --- |
+| `lib/api/client.ts` | Client components | `credentials: 'include'`, so the cookie travels |
+| `lib/api/server.ts` | Server components | Forwards the incoming cookie by hand; a server render has no cookie jar |
+
+Keeping them apart stops `next/headers` being imported into a client component, which fails at
+build time and confusingly.
+
+The session cookie is httpOnly, so no JavaScript here ever sees the token.
+
 ## Low bandwidth is a requirement
 
 Many learners will arrive on a mid-range Android over a slow connection. First load stays under
