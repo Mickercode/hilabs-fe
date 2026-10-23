@@ -1,4 +1,5 @@
 import { cookies } from 'next/headers';
+import { config } from '../config';
 import { request, type RequestOptions } from './request';
 
 export { ApiError } from './request';
@@ -19,6 +20,8 @@ async function serverRequest<T>(path: string, options: RequestOptions = {}): Pro
 
   return request<T>(path, {
     ...options,
+    // Absolute: a server fetch has no origin of its own, and does not go through the rewrite.
+    base: `${config.apiOrigin}/api/v1`,
     headers: { ...options.headers, ...(cookieHeader ? { cookie: cookieHeader } : {}) },
   });
 }

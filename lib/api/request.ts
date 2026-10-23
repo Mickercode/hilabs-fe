@@ -17,6 +17,8 @@ export interface RequestOptions extends Omit<RequestInit, 'body' | 'headers'> {
   headers?: Record<string, string>;
   /** Seconds to cache in the Next data cache. Omit for no caching. */
   revalidate?: number;
+  /** Overrides the base. The server client passes an absolute origin; the browser uses none. */
+  base?: string;
 }
 
 /**
@@ -29,9 +31,9 @@ export interface RequestOptions extends Omit<RequestInit, 'body' | 'headers'> {
  * would break a research invariant.
  */
 export async function request<T>(path: string, options: RequestOptions = {}): Promise<T> {
-  const { body, revalidate, headers, ...rest } = options;
+  const { body, revalidate, headers, base, ...rest } = options;
 
-  const response = await fetch(`${config.apiUrl}${path}`, {
+  const response = await fetch(`${base ?? config.apiUrl}${path}`, {
     ...rest,
     headers: {
       ...(body === undefined ? {} : { 'content-type': 'application/json' }),
