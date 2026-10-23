@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import { Callout } from '../../../components/ui/Callout';
 import { PageHeader } from '../../../components/ui/PageHeader';
-import { api } from '../../../lib/api/client';
+import { serverApi } from '../../../lib/api/server';
 import type { Resource } from '../../../types/api';
 import styles from './page.module.css';
 
@@ -32,7 +32,7 @@ export default function LearnPage() {
 async function ResourceList() {
   let resources: Resource[];
   try {
-    resources = await api.get<Resource[]>('/library/resources?phase=osmotic');
+    resources = await serverApi.get<Resource[]>('/library/resources?phase=osmotic');
   } catch {
     return <p className={styles.empty}>The API is not reachable, so the library cannot be listed.</p>;
   }

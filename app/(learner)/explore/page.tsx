@@ -3,7 +3,7 @@ import { Suspense } from 'react';
 import { Callout } from '../../../components/ui/Callout';
 import { Card, CardBody, CardTitle } from '../../../components/ui/Card';
 import { PageHeader } from '../../../components/ui/PageHeader';
-import { api } from '../../../lib/api/client';
+import { serverApi } from '../../../lib/api/server';
 import styles from './page.module.css';
 
 export const metadata: Metadata = { title: 'Explore' };
@@ -45,7 +45,7 @@ export default function ExplorePage() {
 async function ChallengeList() {
   let challenges: Challenge[];
   try {
-    const all = await api.get<Challenge[]>('/discovery/challenges');
+    const all = await serverApi.get<Challenge[]>('/discovery/challenges');
     challenges = all.filter((challenge) => challenge.tier === 0);
   } catch {
     return (
